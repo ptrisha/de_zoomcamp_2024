@@ -1,0 +1,107 @@
+Question 3. Count records
+========================
+
+SELECT 
+	COUNT(1)
+FROM green_taxi_trips t
+WHERE 
+	CAST(lpep_pickup_datetime AS DATE)='2019-09-18' AND
+	CAST(lpep_dropoff_datetime AS DATE)='2019-09-18'
+
+Question 4. Largest trip for each day
+====================================
+SELECT 
+	MAX(trip_distance) as "daily_max_dist",
+	CAST(lpep_pickup_datetime AS DATE)
+FROM green_taxi_trips t
+GROUP BY  CAST(lpep_pickup_datetime AS DATE)
+ORDER BY "daily_max_dist" DESC
+;
+
+Question 5. Largest trip for each day
+=====================================
+
+SELECT CAST(lpep_pickup_datetime AS date) as "pu_day",
+       SUM(total_amount) as "sum_total_amount",
+	   "PULocationID" 
+FROM public.green_taxi_trips
+WHERE CAST(lpep_pickup_datetime AS date)='2019-09-18'
+GROUP BY "pu_day", "PULocationID"
+;
+
+SELECT u.pu_day,
+       SUM(u.sum_total_amount) as "borough_total_amount",
+	   z."Borough"
+FROM	   
+( SELECT CAST(lpep_pickup_datetime AS date) as "pu_day",
+       SUM(total_amount) as "sum_total_amount",
+	   "PULocationID" 
+  FROM public.green_taxi_trips
+  WHERE CAST(lpep_pickup_datetime AS date)='2019-09-18'
+  GROUP BY "pu_day", "PULocationID"
+ ) AS u
+ LEFT JOIN zones z
+ ON u."PULocationID" = z."LocationID"
+ GROUP BY u.pu_day, z."Borough"
+ ORDER BY borough_total_amount DESC
+;
+
+SELECT *
+FROM (
+    SELECT u.pu_day,
+		   SUM(u.sum_total_amount) as "borough_total_amount",
+		   z."Borough"
+	FROM	   
+	( SELECT CAST(lpep_pickup_datetime AS date) as "pu_day",
+		   SUM(total_amount) as "sum_total_amount",
+		   "PULocationID" 
+	  FROM public.green_taxi_trips
+	  WHERE CAST(lpep_pickup_datetime AS date)='2019-09-18'
+	  GROUP BY "pu_day", "PULocationID"
+	 ) AS u
+	 LEFT JOIN zones z
+	 ON u."PULocationID" = z."LocationID"
+	 GROUP BY u.pu_day, z."Borough"
+	 ORDER BY borough_total_amount DESC
+	) AS f
+WHERE f."borough_total_amount" > 50000 AND f."Borough" != 'Unknown'
+;
+
+Result of query:
+pu_day          borough_total_amount    Borough
+"2019-09-18"	96333.24000000008	    "Brooklyn"
+"2019-09-18"	92271.29999999954	    "Manhattan"
+"2019-09-18"	78671.71000000018	    "Queens"
+
+Question 6. Largest tip
+=======================
+SELECT 
+  tr."PULocationID",
+  zpu."Zone" AS "pu_zone",
+  tr."DOLocationID",
+  zdo."Zone" AS "do_zone",
+  tr.tip_amount
+FROM (
+		SELECT tip_amount,
+			   CAST( CAST(lpep_pickup_datetime AS date ) AS TEXT) as "pu_date",
+			   "PULocationID",
+			   "DOLocationID"
+		FROM green_taxi_trips
+		WHERE CAST( CAST(lpep_pickup_datetime AS date ) AS TEXT) LIKE '2019-09-%'
+	  ) AS tr
+	  LEFT JOIN zones zpu
+      ON tr."PULocationID" = zpu."LocationID"
+      LEFT JOIN zones zdo
+      ON tr."DOLocationID" = zdo."LocationID"
+WHERE zpu."Zone" = 'Astoria'
+ORDER BY tip_amount DESC
+;
+
+Result of query:
+
+7	"Astoria"	132	"JFK Airport"	        62.31
+7	"Astoria"	260	"Woodside"	            30
+7	"Astoria"	137	"Kips Bay"	            28
+7	"Astoria"	264	"NV"	                25
+7	"Astoria"	7	"Astoria"	            20
+7	"Astoria"	239	"Upper West Side South"	20
