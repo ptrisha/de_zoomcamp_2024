@@ -1,0 +1,57 @@
+-- Create external table for green taxi rides for year 2022 files in GCS bucket
+CREATE OR REPLACE EXTERNAL TABLE `zoomcamp-hw3.nyc_taxi.external_green_tripdata_2022`
+OPTIONS (
+  format='PARQUET',
+  uris = [ 'gs://nyc_green_taxi_trotsong123/green_tripdata_2022-*.parquet']
+);
+
+
+-- Create a non partitioned table from external table for the green trip data 2022
+CREATE OR REPLACE TABLE zoomcamp-hw3.nyc_taxi.green_tripdata_2022_non_partitioned AS
+SELECT * FROM zoomcamp-hw3.nyc_taxi.external_green_tripdata_2022;
+
+
+-- Diff between External Table and Materialized Table
+
+-- Scanning 0 MB of data in External Table
+SELECT DISTINCT(PULocationID)
+FROM zoomcamp-hw3.nyc_taxi.external_green_tripdata_2022;
+
+-- Scanning 6.41 MB of data in non-partitioned Materialized Table
+SELECT DISTINCT(PULocationID)
+FROM zoomcamp-hw3.nyc_taxi.green_tripdata_2022_non_partitioned;
+
+
+-- Count of records having a fare_amount of 0
+SELECT COUNT(*) as trips
+FROM zoomcamp-hw3.nyc_taxi.green_tripdata_2022_non_partitioned
+WHERE fare_amount=0;
+
+
+-- Create a partitioned and clustered table from external table
+CREATE OR REPLACE TABLE zoomcamp-hw3.nyc_taxi.green_tripdata_2022_partitioned
+PARTITION BY DATE(lpep_pickup_datetime) 
+CLUSTER BY PULocationID AS
+SELECT * FROM zoomcamp-hw3.nyc_taxi.external_green_tripdata_2022;
+
+
+-- Comparing partitioned and non-partitioned tables
+
+-- partitioned and clustered table
+-- scanning 1.12 MB
+SELECT DISTINCT(PULocationID)
+FROM zoomcamp-hw3.nyc_taxi.green_tripdata_2022_partitioned
+WHERE DATE(lpep_pickup_datetime) BETWEEN '2022-06-01' AND '2022-06-30';
+
+-- non-partitioned table
+-- scanning 12.82 MB of data
+SELECT DISTINCT(PULocationID)
+FROM zoomcamp-hw3.nyc_taxi.green_tripdata_2022_non_partitioned
+WHERE DATE(lpep_pickup_datetime) BETWEEN '2022-06-01' AND '2022-06-30';
+
+
+-- Question 8 on the Materialized Table
+-- BigQuery estimates it would read 0 MB in running the following query
+SELECT COUNT(*)
+FROM zoomcamp-hw3.nyc_taxi.green_tripdata_2022_non_partitioned;
+

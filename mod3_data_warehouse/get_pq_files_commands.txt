@@ -1,0 +1,17 @@
+These are the commands executed in Google Cloud Shell to load the data files from the 
+taxi data website to a GCP bucket.  The bucket name is nyc_green_taxi_trotsong123.  
+Each file contains a month's worth of trip data for the year 2022.
+
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-01.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-01.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-02.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-02.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-03.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-03.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-04.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-04.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-05.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-05.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-06.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-06.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-07.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-07.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-08.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-08.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-09.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-09.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-10.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-10.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-11.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-11.parquet
+curl https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2022-12.parquet | gsutil cp - gs://nyc_green_taxi_trotsong123/green_tripdata_2022-12.parquet
+
