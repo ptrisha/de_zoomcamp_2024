@@ -17,8 +17,10 @@ select
     cast(dolocationid as integer) as dolocationid,
 
     -- timestamps
-    TIMESTAMP_MILLIS(pickup_datetime) as pickup_datetime_st,
-    TIMESTAMP_MILLIS(dropoff_datetime) as dropoff_datetime_st,
+    -- TIMESTAMP_MILLIS(pickup_datetime) as pickup_datetime_st,
+    -- TIMESTAMP_MILLIS(dropoff_datetime) as dropoff_datetime_st,
+    TIMESTAMP(CAST(pickup_datetime AS STRING)) AS pickup_datetime_st,
+    TIMESTAMP(CAST(dropoff_datetime AS STRING)) AS dropoff_datetime_st,
     pickup_datetime,
     dropoff_datetime,
 
