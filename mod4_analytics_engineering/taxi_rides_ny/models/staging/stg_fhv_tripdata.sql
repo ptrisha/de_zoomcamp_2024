@@ -4,32 +4,28 @@
     )
 }}
 
-
 with tripdata as 
 (
-    select * from {{ source('staging', 'fhv_tripdata') }}
-    where dispatching_base_num is not null
+  select *,
+        EXTRACT( year from CAST(pickup_datetime AS TIMESTAMP) ) as yr
+  from {{ source('staging','fhv_tripdata') }}
 )
 select
-     -- identifiers
+    -- identifiers
     cast(dispatching_base_num as string) as dispatching_base_num,
-    cast(pulocationid as integer) as pulocationid,
-    cast(dolocationid as integer) as dolocationid,
-
+    {{ dbt.safe_cast("pulocationid", api.Column.translate_type("integer")) }} as pickup_locationid,
+    {{ dbt.safe_cast("dolocationid", api.Column.translate_type("integer")) }} as dropoff_locationid,
+    
     -- timestamps
-    -- TIMESTAMP_MILLIS(pickup_datetime) as pickup_datetime_st,
-    -- TIMESTAMP_MILLIS(dropoff_datetime) as dropoff_datetime_st,
-    TIMESTAMP(CAST(pickup_datetime AS STRING)) AS pickup_datetime_st,
-    TIMESTAMP(CAST(dropoff_datetime AS STRING)) AS dropoff_datetime_st,
-    pickup_datetime,
-    dropoff_datetime,
-
+    cast(pickup_datetime as timestamp) as pickup_datetime,
+    cast(dropoff_datetime as timestamp) as dropoff_datetime,
+    
     -- trip info
-    sr_flag,
-    affiliated_base_number
+    cast(sr_flag as string) as sr_flag,
+    cast(affiliated_base_number as string) as affiliated_base_number
 
 from tripdata
-
+where yr = 2019
 
 
 -- dbt build --select <model_name> --vars '{'is_test_run': 'false'}'
@@ -38,4 +34,3 @@ from tripdata
   limit 100
 
 {% endif %}
-
